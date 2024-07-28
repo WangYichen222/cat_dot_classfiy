@@ -3,7 +3,7 @@ from typing import Iterable, Optional
 import torch
 from timm.data import Mixup
 from timm.utils import accuracy, ModelEma
-
+from inference import idx_to_class,class_to_idx
 import utils
 
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
@@ -135,6 +135,11 @@ def evaluate(data_loader, model, device, use_amp=False):
 
     # switch to evaluation mode
     model.eval()
+    results = {}
+    for target_class in sorted(class_to_idx.keys()): 
+        results[target_class] = {}
+        results[target_class]['true'] = 0.0
+        results[target_class]['num'] = 0.0
     for batch in metric_logger.log_every(data_loader, 10, header):
         images = batch[0]
         target = batch[-1]
@@ -152,11 +157,27 @@ def evaluate(data_loader, model, device, use_amp=False):
             loss = criterion(output, target)
 
         acc1, acc5 = accuracy(output, target, topk=(1, 5))
-
+        _, pred = output.topk(1, 1, True, True)
+        pred = pred.t()
+        correct = pred.eq(target.reshape(1, -1).expand_as(pred))
+        for idx, index in enumerate(target):
+            results[idx_to_class[index.item()]]['num'] += 1
+            if correct[0][idx].item() is True:
+                results[idx_to_class[index.item()]]['true'] += 1 
+                
         batch_size = images.shape[0]
         metric_logger.update(loss=loss.item())
         metric_logger.meters['acc1'].update(acc1.item(), n=batch_size)
         metric_logger.meters['acc5'].update(acc5.item(), n=batch_size)
+    acc_results = {}
+    num_true = 0
+    num_all = 0
+    for target_class in results.keys():
+        num_true +=results[target_class]['true']
+        num_all += results[target_class]['num']
+        acc_results[target_class] = results[target_class]['true']/results[target_class]['num']
+    print('acc_results:',acc_results)
+    print("acc:",num_true/num_all)
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print('* Acc@1 {top1.global_avg:.3f} Acc@5 {top5.global_avg:.3f} loss {losses.global_avg:.3f}'
