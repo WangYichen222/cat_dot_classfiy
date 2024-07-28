@@ -4,7 +4,7 @@ import torch
 import torchvision
 import torch.nn as nn
 from mobilenetv3 import MobileNetV3_Small, MobileNetV3_Large
-from tiny_vit import TinyViT,tiny_vit_21m_224
+from tiny_vit import TinyViT,new_tiny_vit_21m_224
 from datasets import build_transform
 from PIL import Image, ImageDraw, ImageFont
 
@@ -178,7 +178,7 @@ def main(args):
         model.fc = nn.Linear(num_ftrs, 37)
     elif args.model == 'vit':
         # model = TinyViT(num_classes=37)
-        model = tiny_vit_21m_224(pretrained=False)
+        model = new_tiny_vit_21m_224(pretrained=False)
     model.to(device)
     print("Model = %s" % str(model))
     

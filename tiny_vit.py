@@ -657,6 +657,29 @@ def tiny_vit_11m_224(pretrained=False, **kwargs):
 @register_model
 def tiny_vit_21m_224(pretrained=False, **kwargs):
     model_kwargs = dict(
+        embed_dims=[96, 192, 384, 576],
+        depths=[2, 2, 6, 2],
+        num_heads=[3, 6, 12, 18],
+        window_sizes=[7, 7, 14, 7],
+        drop_path_rate=0.2,
+    )
+    model_kwargs.update(kwargs)
+    return _create_tiny_vit('tiny_vit_21m_224', pretrained, **model_kwargs)
+    
+@register_model
+def new_tiny_vit_21m_224(pretrained=False, **kwargs):
+    model_kwargs = dict(
+        embed_dims=[64, 128, 256, 512],
+        depths=[2, 2, 6, 2],
+        num_heads=[2, 4, 8, 16],
+        window_sizes=[7, 7, 14, 7],
+        drop_path_rate=0.2,
+    )
+    model_kwargs.update(kwargs)
+    return _create_tiny_vit('tiny_vit_21m_224', pretrained, **model_kwargs)
+
+def tiny_vit_21m_224(pretrained=False, **kwargs):
+    model_kwargs = dict(
         embed_dims=[64, 128, 256, 512],
         depths=[2, 2, 6, 2],
         num_heads=[2, 4, 8, 16],

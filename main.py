@@ -16,7 +16,7 @@ from timm.loss import LabelSmoothingCrossEntropy, SoftTargetCrossEntropy
 from timm.utils import ModelEma
 from optim_factory import create_optimizer, LayerDecayValueAssigner
 from mobilenetv3 import MobileNetV3_Small, MobileNetV3_Large
-from tiny_vit import TinyViT,tiny_vit_21m_224
+from tiny_vit import TinyViT,new_tiny_vit_21m_224
 
 from datasets import build_dataset
 from engine import train_one_epoch, evaluate
@@ -273,7 +273,7 @@ def main(args):
         model.fc = nn.Linear(num_ftrs, 37)
     elif args.model == 'vit':
         # model = TinyViT(num_classes=37)
-        model = tiny_vit_21m_224(pretrained=False)
+        model = new_tiny_vit_21m_224(pretrained=False)
     if args.finetune:
         if args.finetune.startswith('https'):
             checkpoint = torch.hub.load_state_dict_from_url(

@@ -35,8 +35,8 @@ python inference.py --model {MODEL} --img_path {IMGPATH} --checkpoint {CHECKPOIN
 ### Result Show
 (1)Test Accuracy\
 a.resnet18
-![](result/resnet18_result.png)
+<img src="result/resnet18_result.png" width="1000" >
 b.vit
-![](result/vit_result.png)
+<img src="result/vit_result.png" width="1000" >
 (2)Inference Result Show
-![](result/inference.png)
+<img src="result/inference.png" width="1000" >
