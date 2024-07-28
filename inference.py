@@ -4,8 +4,9 @@ import torch
 import torchvision
 import torch.nn as nn
 from mobilenetv3 import MobileNetV3_Small, MobileNetV3_Large
+from tiny_vit import TinyViT,tiny_vit_21m_224
 from datasets import build_transform
-from PIL import Image
+from PIL import Image, ImageDraw, ImageFont
 
 def pil_loader(path: str) -> Image.Image:
     with open(path, 'rb') as f:
@@ -184,9 +185,10 @@ def main(args):
     if args.checkpoint:
         checkpoint = torch.load(args.checkpoint, map_location='cpu')
         model.load_state_dict(checkpoint['model'])
-
+    model.eval()
     img_transform = build_transform(is_train=False, args=args)
     img = pil_loader(args.img_path)
+    
     input = img_transform(img)
     if args.use_amp:
         with torch.cuda.amp.autocast():    
@@ -203,6 +205,11 @@ def main(args):
     pred_ID = subcategory_to_index[pred_subcategory]
     pred_category = species_to_category[pred_ID]
     gt = '_'.join(args.img_path.split('/')[-1].split('_')[:-1])
+    draw = ImageDraw.Draw(img)
+    font = ImageFont.truetype('Letters for Learners.ttf', size=20)
+    draw.text([1, 1],  '  GT: ID:{}, Category:{}, SubCategory:{}'.format(subcategory_to_index[gt], species_to_category[subcategory_to_index[gt]], gt), (255, 0, 0), font=font)
+    draw.text([1, 20], 'Pred: ID:{}, Category:{}, SubCategory:{}'.format(pred_ID, pred_category, pred_subcategory), (255, 0, 0), font=font)  
+    img.show()
     print('gt:  ID:{}, Category:{}, SubCategory:{}'.format(subcategory_to_index[gt], species_to_category[subcategory_to_index[gt]], gt))
     print('Pred:  ID:{}, Category:{}, SubCategory:{}'.format(pred_ID, pred_category, pred_subcategory))
     

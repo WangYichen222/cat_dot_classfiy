@@ -29,4 +29,14 @@ MODEL支持resnet18,mobilenet_v3_small,mobilenet_v3_large,vit
 python main.py --model {MODEL} ----data_path {DATAPATH} --output_dir {OUTPUTDIR} --epochs 300 --batch_size 128 --lr 4e-3 --use_amp True
 #测试
 python main.py --model {MODEL} --resume {CHECKPOINT} --eval_data_path {EVALDATAPATH} --use_amp True --eval True
+#推理单张图片
+python inference.py --model {MODEL} --img_path {IMGPATH} --checkpoint {CHECKPOINT} --use_amp True
 ```
+### Result Show
+(1)Test Accuracy\
+a.resnet18
+![](result/resnet18_result.png)
+b.vit
+![](result/vit_result.png)
+(2)Inference Result Show
+![](result/inference.png)

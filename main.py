@@ -40,7 +40,7 @@ def str2bool(v):
 
 def get_args_parser():
     parser = argparse.ArgumentParser('cat_dog training and evaluation script for image classification', add_help=False)
-    parser.add_argument('--batch_size', default=1, type=int,
+    parser.add_argument('--batch_size', default=128, type=int,
                         help='Per GPU batch size')
     parser.add_argument('--epochs', default=300, type=int)
     parser.add_argument('--update_freq', default=1, type=int,
@@ -246,7 +246,7 @@ def main(args):
     if dataset_val is not None:
         data_loader_val = torch.utils.data.DataLoader(
             dataset_val, sampler=sampler_val,
-            batch_size=args.batch_size,
+            batch_size=125,
             num_workers=args.num_workers,
             pin_memory=args.pin_mem,
             drop_last=False
