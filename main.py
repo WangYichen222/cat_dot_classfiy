@@ -136,9 +136,9 @@ def get_args_parser():
     parser.add_argument('--model_prefix', default='', type=str)
 
     # Dataset parameters
-    parser.add_argument('--data_path', default='/cat_dog_classify/data/trainval/', type=str,
+    parser.add_argument('--data_path', default='data/trainval/', type=str,
                         help='dataset path')
-    parser.add_argument('--eval_data_path', default='/cat_dog_classify/data/test/', type=str,
+    parser.add_argument('--eval_data_path', default='data/test/', type=str,
                         help='dataset path for evaluation')
     parser.add_argument('--nb_classes', default=37, type=int,
                         help='number of the classification types')
