@@ -5,6 +5,7 @@ from timm.data import Mixup
 from timm.utils import accuracy, ModelEma
 from inference import idx_to_class,class_to_idx,species_to_category,subcategory_to_index
 import utils
+import time
 
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
                     data_loader: Iterable, optimizer: torch.optim.Optimizer,
@@ -147,6 +148,7 @@ def evaluate(data_loader, model, device, use_amp=False):
     class_results['Dog'] = {}
     class_results['Dog']['true'] = 0.0
     class_results['Dog']['num'] = 0.0
+    all_time = 0.0
     for batch in metric_logger.log_every(data_loader, 10, header):
         images = batch[0]
         target = batch[-1]
@@ -155,6 +157,7 @@ def evaluate(data_loader, model, device, use_amp=False):
         target = target.to(device, non_blocking=True)
 
         # compute output
+        start = time.time()
         if use_amp:
             with torch.cuda.amp.autocast():
                 output = model(images)
@@ -162,6 +165,7 @@ def evaluate(data_loader, model, device, use_amp=False):
         else:
             output = model(images)
             loss = criterion(output, target)
+        all_time += time.time() - start
 
         acc1, acc5 = accuracy(output, target, topk=(1, 5))
         _, pred = output.topk(1, 1, True, True)
@@ -191,6 +195,7 @@ def evaluate(data_loader, model, device, use_amp=False):
         acc_results[target_class] = results[target_class]['true']/results[target_class]['num']
     print('acc_results:',acc_results)
     print("acc:",num_true/num_all)
+    print("Fps:",num_all/all_time)
     print("acc_dog:",class_results['Dog']['true']/class_results['Dog']['num'])
     print("acc_cat:",class_results['Cat']['true']/class_results['Cat']['num'])
     # gather the stats from all processes
