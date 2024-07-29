@@ -176,6 +176,7 @@ def evaluate(data_loader, model, device, use_amp=False):
         num_true +=results[target_class]['true']
         num_all += results[target_class]['num']
         acc_results[target_class] = results[target_class]['true']/results[target_class]['num']
+    import pdb;pdb.set_trace()
     print('acc_results:',acc_results)
     print("acc:",num_true/num_all)
     # gather the stats from all processes
