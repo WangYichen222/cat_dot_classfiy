@@ -35,5 +35,6 @@
     "shiba_inu": 0.9,
     "staffordshire_bull_terrier": 0.4943820224719101,
     "wheaten_terrier": 0.7,
-    "yorkshire_terrier": 0.86
+    "yorkshire_terrier": 0.86,
+    "average": 0.812755519215045
 }
