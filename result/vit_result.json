@@ -36,5 +36,7 @@
     "staffordshire_bull_terrier": 0.4943820224719101,
     "wheaten_terrier": 0.7,
     "yorkshire_terrier": 0.86,
-    "average": 0.812755519215045
+    "average": 0.812755519215045,
+    "Cat": 0.9509721048182587,
+    "Dog": 0.9802896218825422
 }

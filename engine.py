@@ -3,7 +3,7 @@ from typing import Iterable, Optional
 import torch
 from timm.data import Mixup
 from timm.utils import accuracy, ModelEma
-from inference import idx_to_class,class_to_idx
+from inference import idx_to_class,class_to_idx,species_to_category,subcategory_to_index
 import utils
 
 def train_one_epoch(model: torch.nn.Module, criterion: torch.nn.Module,
@@ -140,6 +140,13 @@ def evaluate(data_loader, model, device, use_amp=False):
         results[target_class] = {}
         results[target_class]['true'] = 0.0
         results[target_class]['num'] = 0.0
+    class_results = {}
+    class_results['Cat'] = {}
+    class_results['Cat']['true'] = 0.0
+    class_results['Cat']['num'] = 0.0
+    class_results['Dog'] = {}
+    class_results['Dog']['true'] = 0.0
+    class_results['Dog']['num'] = 0.0
     for batch in metric_logger.log_every(data_loader, 10, header):
         images = batch[0]
         target = batch[-1]
@@ -161,9 +168,15 @@ def evaluate(data_loader, model, device, use_amp=False):
         pred = pred.t()
         correct = pred.eq(target.reshape(1, -1).expand_as(pred))
         for idx, index in enumerate(target):
+            target_category = species_to_category[subcategory_to_index[idx_to_class[index.item()]]]
+            pred_category = species_to_category[subcategory_to_index[idx_to_class[pred[0][idx].item()]]]
+            class_results[target_category]['num'] += 1
             results[idx_to_class[index.item()]]['num'] += 1
             if correct[0][idx].item() is True:
                 results[idx_to_class[index.item()]]['true'] += 1 
+            if target_category == pred_category:
+                class_results[target_category]['true'] += 1
+
                 
         batch_size = images.shape[0]
         metric_logger.update(loss=loss.item())
@@ -176,9 +189,10 @@ def evaluate(data_loader, model, device, use_amp=False):
         num_true +=results[target_class]['true']
         num_all += results[target_class]['num']
         acc_results[target_class] = results[target_class]['true']/results[target_class]['num']
-    import pdb;pdb.set_trace()
     print('acc_results:',acc_results)
     print("acc:",num_true/num_all)
+    print("acc_dog:",class_results['Dog']['true']/class_results['Dog']['num'])
+    print("acc_cat:",class_results['Cat']['true']/class_results['Cat']['num'])
     # gather the stats from all processes
     metric_logger.synchronize_between_processes()
     print('* Acc@1 {top1.global_avg:.3f} Acc@5 {top5.global_avg:.3f} loss {losses.global_avg:.3f}'
